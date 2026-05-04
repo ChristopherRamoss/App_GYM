@@ -1,0 +1,1249 @@
+[
+ {
+  "id": "Bench_Press_Barbell",
+  "name": "Bench Press (Barbell)",
+  "description": "The king of all upper body exercises. Trains every push muscle, with an emphasis on chest.",
+  "kind": 0,
+  "instructions": [
+   "Draw your shoulder blades back behind you to keep from pressing with rounded shoulders.",
+   "Grasp the barbell using an overhand grip, placing your thumbs on the outside of your closed fist. Your arms are slightly wider than shoulder-width apart and the angle of your upper arms is about 45 degrees to the body.",
+   "Remove the barbell from the rack, locking your elbows.",
+   "Inhale while lowering the bar to your chest, at the nipple line.",
+   "Exhale as you press the bar above your chest, extending your arms. Don't watch the bar—focus on the ceiling.",
+   "Lower the bar so it is just above your chest. This is the starting position for the next bench press."
+  ],
+  "musclesWorked": [
+   "Chest",
+   "Triceps",
+   "Shoulders"
+  ]
+ },
+ {
+  "id": "Squat_Barbell",
+  "name": "Squat (Barbell)",
+  "description": "A barbell squat, also known as a barbell back squat, is a compound exercise that activates muscle groups throughout your lower body, including your hamstrings, glutes, and lower back muscles.",
+  "kind": 0,
+  "instructions": [
+   "Maintaining a wide stance, place your feet squarely under the bar and lift it from the rack using the legs. Keep the weight centered; do not lift from your heels or toes.",
+   "Slowly bend your knees while keeping your torso erect. Do not lean forward. Keep your hips under the bar at all times. At the bottom of your movement, the angles of your knee joint and hip joint are nearly equal. Never relax or drop to the bottom position. Maintain constant, slow, and controlled muscle tension. Inhale as you lower.",
+   "Slowly return to starting position while keeping your torso and back erect and hips under the bar. Exhale as you push through your heels and stand tall."
+  ],
+  "musclesWorked": [
+   "Quadriceps",
+   "Hamstrings",
+   "Glutes",
+   "Back (lower)"
+  ]
+ },
+ {
+  "id": "Tricep_Extension_Cable",
+  "name": "Tricep Extension (Cable)",
+  "description": "The overhead tricep extension is an isolation exercise that targets the triceps. It allows you to train the triceps in a very stretched position.",
+  "kind": 0,
+  "instructions": [
+   "TODO"
+  ],
+  "musclesWorked": [
+   "Triceps"
+  ]
+ },
+ {
+  "id": "Pec_Deck",
+  "name": "Pec Deck",
+  "description": "TODO",
+  "musclesWorked": [
+   "Chest"
+  ],
+  "instructions": [
+   "TODO"
+  ],
+  "kind": 0
+ },
+ {
+  "id": "T-Bar_Row",
+  "name": "T-Bar Row",
+  "description": "The T-bar row is a back exercise that primarily targets the lats. Depending on variation and execution, it may also hit the rear deltoid.",
+  "musclesWorked": [
+   "Back (upper)",
+   "Back (lower)"
+  ],
+  "instructions": [
+   "TODO"
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Chest_Dip",
+  "name": "Chest Dip",
+  "description": "TODO",
+  "musclesWorked": [
+   "Chest",
+   "Triceps"
+  ],
+  "instructions": [
+   "TODO"
+  ],
+  "kind": 2
+ },
+ {
+  "id": "Seated_Shoulder_Press_Dumbbell",
+  "name": "Seated Shoulder Press (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Chin-Up",
+  "name": "Chin-Up",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Biceps",
+   "Back (upper)"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 2
+ },
+ {
+  "id": "Close-Grip_Bench_Press",
+  "name": "Close-Grip Bench Press",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Triceps",
+   "Chest",
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Incline_Row_Dumbbell",
+  "name": "Incline Row (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Front_Shrug_Barbell",
+  "name": "Front Shrug (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Traps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Spider_Curl",
+  "name": "Spider Curl",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Biceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Deadlift_Barbell",
+  "name": "Deadlift (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Hamstrings",
+   "Back (lower)",
+   "Core",
+   "Forearms"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Romanian_Deadlift_Barbell",
+  "name": "Romanian Deadlift (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Hamstrings",
+   "Back (lower)",
+   "Core",
+   "Forearms"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Sumo_Deadlift_Barbell",
+  "name": "Sumo Deadlift (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Hamstrings",
+   "Back (lower)",
+   "Core",
+   "Forearms"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Calf_Press",
+  "name": "Calf Press",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Calves"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Calf_Raise_Smith_Machine",
+  "name": "Calf Raise (Smith Machine)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Calves"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Lateral_Raise_Machine",
+  "name": "Lateral Raise (Machine)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Lateral_Raise_Cable",
+  "name": "Lateral Raise (Cable)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Lateral_Raise_Dumbbell",
+  "name": "Lateral Raise (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Bent-Over_Reverse_Fly_Dumbbell",
+  "name": "Bent-Over Reverse Fly (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Bent-Over_Reverse_Fly_Cable",
+  "name": "Bent-Over Reverse Fly (Cable)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Lying_Leg_Curl",
+  "name": "Lying Leg Curl",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Hamstrings"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Seated_Leg_Curl",
+  "name": "Seated Leg Curl",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Hamstrings"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Wrist_Curl",
+  "name": "Wrist Curl",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Forearms"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Reverse_Wrist_Curl",
+  "name": "Reverse Wrist Curl",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Forearms"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Split_Squat_Barbell",
+  "name": "Split Squat (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Quadriceps",
+   "Glutes"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Split_Squat_Dumbbell",
+  "name": "Split Squat (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Quadriceps",
+   "Glutes"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Front_Squat_Barbell",
+  "name": "Front Squat (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Quadriceps",
+   "Glutes",
+   "Core"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Front_Bench_Squat_Barbell",
+  "name": "Front Bench Squat (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Quadriceps",
+   "Core"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Overhead_Squat_Barbell",
+  "name": "Overhead Squat (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Quadriceps",
+   "Glutes",
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Pistol_Squat_Dumbbell",
+  "name": "Pistol Squat (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Quadriceps",
+   "Glutes"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Split_Squat_Smith_Machine",
+  "name": "Split Squat (Smith Machine)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Quadriceps",
+   "Glutes"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Good_Morning",
+  "name": "Good Morning",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Hamstrings",
+   "Back (lower)",
+   "Core"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Seated_Hammer_Curl",
+  "name": "Seated Hammer Curl",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Biceps",
+   "Forearms"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Standing_Hammer_Curl",
+  "name": "Standing Hammer Curl",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Biceps",
+   "Forearms"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Bent-Over_Row_Barbell",
+  "name": "Bent-Over Row (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Back (upper)",
+   "Back (lower)",
+   "Biceps",
+   "Core"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Upright_Row_Barbell",
+  "name": "Upright Row (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders",
+   "Traps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Upright_Row_Cable",
+  "name": "Upright Row (Cable)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders",
+   "Traps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Upright_Row_Smith_Machine",
+  "name": "Upright Row (Smith Machine)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders",
+   "Traps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Reverse_Fly_Machine",
+  "name": "Reverse Fly (Machine)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Crunch_Machine",
+  "name": "Crunch (Machine)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Core"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Incline_Curl",
+  "name": "Incline Curl",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Biceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Incline_Hammer_Curl",
+  "name": "Incline Hammer Curl",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Biceps",
+   "Forearms"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Skullcrusher_Barbell",
+  "name": "Skullcrusher (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Triceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Skullcrusher_Dumbbell",
+  "name": "Skullcrusher (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Triceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "One-Arm_Tricep_Extension",
+  "name": "One-Arm Tricep Extension",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Triceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Seated_Tricep_Extension_Dumbbell",
+  "name": "Seated Tricep Extension (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Triceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Leg_Press",
+  "name": "Leg Press",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Quadriceps",
+   "Glutes"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Single-Leg_Calf_Raise_Dumbbell",
+  "name": "Single-Leg Calf Raise (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Calves"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Stiff_Leg_Deadlift_Barbell",
+  "name": "Stiff Leg Deadlift (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Hamstrings",
+   "Back (lower)",
+   "Core"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Hip_Thrust_Barbell",
+  "name": "Hip Thrust (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Glutes"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Lunge_Barbell",
+  "name": "Lunge (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Quadriceps",
+   "Glutes"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Bench_Dip",
+  "name": "Bench Dip",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Triceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 2
+ },
+ {
+  "id": "Bench_Press_Dumbbell",
+  "name": "Bench Press (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Chest",
+   "Triceps",
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Chest_Fly_Dumbbell",
+  "name": "Chest Fly (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Chest"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Goblet_Squat",
+  "name": "Goblet Squat",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Quadriceps",
+   "Glutes"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Incline_Bench_Press_Barbell",
+  "name": "Incline Bench Press (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Chest",
+   "Shoulders",
+   "Triceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Incline_Bench_Press_Dumbbell",
+  "name": "Incline Bench Press (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Chest",
+   "Shoulders",
+   "Triceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Incline_Chest_Fly_Dumbbell",
+  "name": "Incline Chest Fly (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Chest"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Incline_Bench_Press_Smith_Machine",
+  "name": "Incline Bench Press (Smith Machine)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Chest",
+   "Shoulders",
+   "Triceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Chest_Fly_Cable",
+  "name": "Chest Fly (Cable)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Chest"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Bicep_Curl_EZ_Bar",
+  "name": "Bicep Curl (EZ Bar)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Biceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Underhand_Lat_Pulldown",
+  "name": "Underhand Lat Pulldown",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Back (upper)",
+   "Biceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Bicep_Curl_Barbell",
+  "name": "Bicep Curl (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Biceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "One-Arm_Row_Dumbbell",
+  "name": "One-Arm Row (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Back (upper)",
+   "Biceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Seated_Shoulder_Press_Barbell",
+  "name": "Seated Shoulder Press (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Seated_Row_Cable",
+  "name": "Seated Row (Cable)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Back (upper)"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Seated_One-Arm_Concentration_Curl_Dumbbell",
+  "name": "Seated One-Arm Concentration Curl (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Biceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Seated_Tricep_Extension_EZ_Bar",
+  "name": "Seated Tricep Extension (EZ Bar)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Unknown"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Shoulder_Press_Smith_Machine",
+  "name": "Shoulder Press (Smith Machine)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Hammer_Curl_Cable",
+  "name": "Hammer Curl (Cable)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Biceps",
+   "Forearms"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Lat_Pushdown_Cable",
+  "name": "Lat Pushdown (Cable)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Back (upper)"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Bicep_Curl_Dumbbell",
+  "name": "Bicep Curl (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Biceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Hammer_Curl_Dumbbell",
+  "name": "Hammer Curl (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Biceps",
+   "Forearms"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Standing_Calf_Raise_Dumbbell",
+  "name": "Standing Calf Raise (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Calves"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Front_Raise_Dumbbell",
+  "name": "Front Raise (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Standing_Shoulder_Press_Dumbbell",
+  "name": "Standing Shoulder Press (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Standing_Concentration_Curl_Dumbbell",
+  "name": "Standing Concentration Curl (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Biceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Tricep_Kickback_Dumbbell",
+  "name": "Tricep Kickback (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Triceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Shoulder_Press_Barbell",
+  "name": "Shoulder Press (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Shoulder_Rotation_Dumbbell",
+  "name": "Shoulder Rotation (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Pullover_Dumbbell",
+  "name": "Pullover (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Chest",
+   "Back (upper)",
+   "Shoulders",
+   "Triceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Thigh_Adductor_Machine",
+  "name": "Thigh Adductor (Machine)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Unknown"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Thigh_Abductor_Machine",
+  "name": "Thigh Abductor (Machine)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Unknown"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Tricep_Dip",
+  "name": "Tricep Dip",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Triceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 2
+ },
+ {
+  "id": "Preacher_Curl_Dumbbell",
+  "name": "Preacher Curl (Dumbbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Biceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Underhand_Lat_Pulldown_Machine",
+  "name": "Underhand Lat Pulldown (Machine)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Back (upper)",
+   "Biceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Pull-Up",
+  "name": "Pull-Up",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Back (upper)",
+   "Biceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 2
+ },
+ {
+  "id": "Lat_Pulldown_Cable",
+  "name": "Lat Pulldown (Cable)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Back (upper)",
+   "Biceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Face_Pull",
+  "name": "Face Pull",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Shoulders"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Seated_Calf_Raise_Machine",
+  "name": "Seated Calf Raise (Machine)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Calves"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Leg_Extension",
+  "name": "Leg Extension",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Quadriceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Tricep_Pushdown_Rope",
+  "name": "Tricep Pushdown (Rope)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Triceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Tricep_Pushdown_Bar",
+  "name": "Tricep Pushdown (Bar)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Triceps"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Hack_Squat",
+  "name": "Hack Squat",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Quadriceps",
+   "Glutes"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Hack_Squat_Barbell",
+  "name": "Hack Squat (Barbell)",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Quadriceps",
+   "Glutes"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 0
+ },
+ {
+  "id": "Dead_Hang",
+  "name": "Dead Hang",
+  "description": "This exercise has not yet been given a description.",
+  "musclesWorked": [
+   "Forearms"
+  ],
+  "instructions": [
+   "This exercise has not yet been specified instructions."
+  ],
+  "kind": 3
+ }
+]
