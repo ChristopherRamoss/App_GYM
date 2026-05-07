@@ -71,5 +71,9 @@ mis_rutinas_page  = st.Page("vistas/mis_rutinas.py",     title="Entrenar",     i
 perfil_page       = st.Page("vistas/perfil.py",          title="Perfil",       icon=":material/person:")
 estadisticas_page = st.Page("vistas/estadisticas.py",      title="Estadísticas", icon=":material/assessment:")
 
-pg = st.navigation([inicio_page, entreno_page, mis_rutinas_page, perfil_page, estadisticas_page])
+metas_page         = st.Page("vistas/metas.py",             title="Metas",      icon=":material/flag:")
+progreso_page      = st.Page("vistas/progreso.py",          title="Progreso",   icon=":material/show_chart:")
+estado_page        = st.Page("vistas/cuerpo.py",   title="Estado Muscular",icon=":material/accessibility_new:")
+
+pg = st.navigation([inicio_page,  entreno_page, mis_rutinas_page,  estadisticas_page, metas_page, progreso_page, estado_page, perfil_page])
 pg.run()

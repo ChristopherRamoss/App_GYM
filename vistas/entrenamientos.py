@@ -16,6 +16,11 @@ c.execute("""CREATE TABLE IF NOT EXISTS entreno
 c.execute("""CREATE TABLE IF NOT EXISTS rutinas
              (id INTEGER PRIMARY KEY AUTOINCREMENT,
               nombre_rutina TEXT, ejercicio TEXT, series_planificadas INTEGER)""")
+# Tabla para ejercicios personalizados (no están en el JSON)
+c.execute("""CREATE TABLE IF NOT EXISTS ejercicios_custom
+             (id INTEGER PRIMARY KEY AUTOINCREMENT,
+              nombre TEXT UNIQUE,
+              fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP)""")
 conn.commit()
 
 # ─── DATOS ────────────────────────────────────────────────────────
@@ -32,30 +37,94 @@ TRAD = {
 }
 def m_es(m): return TRAD.get(m, m.title())
 
+# Placeholder para ejercicios sin imagen
+IMG_PLACEHOLDER = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Curl/0.jpg"
+
 # ══════════════════════════════════════════════════════════════════
-# SESSION STATE — todo el estado vive aquí
+# SESSION STATE
 # ══════════════════════════════════════════════════════════════════
-# rutina_wip: lista de dicts ordenada que representa la rutina en construcción
-# [{"ejercicio": str, "series": int, "url": str, "musculos": [str]}]
 _defaults = {
-    "rutina_wip":        [],       # Rutina en construcción
-    "rutina_wip_nombre": "",       # Nombre de la rutina activa
-    "filtro_grupo":      "Todos",  # Filtro de músculo persistente
-    "filtro_fuente":     "Biblioteca completa",  # Biblioteca / Frecuentes
-    "ultimo_ej_sel":     None,     # Último ejercicio seleccionado (para continuidad)
-    "undo_buffer":       None,     # {"ejercicio": dict, "pos": int, "ts": float}
-    "editando_rutina":   None,     # nombre de rutina en edición (None = modo creación)
-    "guardado_ts":       0,        # timestamp del último guardado en DB
+    "rutina_wip":         [],
+    "rutina_wip_nombre":  "",
+    "filtro_grupo":       "Todos",
+    "filtro_fuente":      "Biblioteca completa",
+    "ultimo_ej_sel":      None,
+    "undo_buffer":        None,
+    "editando_rutina":    None,
+    "guardado_ts":        0,
+    "series_para_agregar": 3,
+    # Modo rápido
+    "modo_input":          "Visual",
+    "quick_texto":         "",
+    "quick_ej_confirmado": None,
 }
 for k, v in _defaults.items():
     if k not in st.session_state:
         st.session_state[k] = v
 
 # ══════════════════════════════════════════════════════════════════
-# HELPERS DB
+# HELPERS — Ejercicios personalizados
+# ══════════════════════════════════════════════════════════════════
+def obtener_ejercicios_custom():
+    rows = c.execute("SELECT nombre FROM ejercicios_custom ORDER BY nombre").fetchall()
+    return [r[0] for r in rows]
+
+def guardar_ejercicio_custom(nombre):
+    try:
+        c.execute("INSERT OR IGNORE INTO ejercicios_custom (nombre) VALUES (?)", (nombre,))
+        conn.commit()
+    except Exception:
+        pass
+
+def obtener_ejercicios_frecuentes(n=80):
+    rows = c.execute(
+        "SELECT ejercicio, COUNT(*) as cnt FROM entreno GROUP BY ejercicio ORDER BY cnt DESC LIMIT ?",
+        (n,)
+    ).fetchall()
+    frecuentes = [r[0] for r in rows]
+    if not frecuentes:
+        frecuentes = [r[0] for r in c.execute(
+            "SELECT DISTINCT ejercicio FROM rutinas ORDER BY ejercicio"
+        ).fetchall()]
+    # Incluir custom aunque no tengan historial
+    custom = obtener_ejercicios_custom()
+    for ej in custom:
+        if ej not in frecuentes:
+            frecuentes.append(ej)
+    return frecuentes
+
+def buscar_sugerencias(texto, limite=8):
+    """
+    Combina biblioteca + custom + frecuentes.
+    Prioriza: frecuentes que coincidan > biblioteca que coincidan.
+    """
+    texto = texto.strip().lower()
+    if not texto:
+        return []
+
+    frecuentes  = set(obtener_ejercicios_frecuentes())
+    custom      = set(obtener_ejercicios_custom())
+    todos       = list(biblioteca_completa.keys()) + list(custom)
+
+    coinciden   = [ej for ej in todos if texto in ej.lower()]
+    # Ordenar: frecuentes primero, luego alfabético
+    coinciden_freq = sorted([e for e in coinciden if e in frecuentes])
+    coinciden_rest = sorted([e for e in coinciden if e not in frecuentes])
+    resultado = coinciden_freq + coinciden_rest
+
+    return resultado[:limite]
+
+def info_ejercicio(nombre):
+    """Devuelve info del ejercicio (biblioteca o vacío para custom)."""
+    info = biblioteca_completa.get(nombre, {})
+    if not info:
+        info = {"url": None, "primaryMuscles": [], "level": "", "equipment": ""}
+    return info
+
+# ══════════════════════════════════════════════════════════════════
+# HELPERS — DB rutinas
 # ══════════════════════════════════════════════════════════════════
 def persistir_rutina_db(nombre, ejercicios_list):
-    """Guarda (o reemplaza) la rutina completa en DB."""
     if not nombre or not ejercicios_list:
         return
     c.execute("DELETE FROM rutinas WHERE nombre_rutina = ?", (nombre,))
@@ -67,38 +136,23 @@ def persistir_rutina_db(nombre, ejercicios_list):
     conn.commit()
 
 def cargar_rutina_db(nombre):
-    """Carga una rutina de la DB a session_state."""
     rows = c.execute(
         "SELECT ejercicio, series_planificadas FROM rutinas WHERE nombre_rutina=? ORDER BY rowid",
         (nombre,)
     ).fetchall()
     wip = []
     for ej, ser in rows:
-        info = biblioteca_completa.get(ej, {})
+        inf = info_ejercicio(ej)
         wip.append({
             "ejercicio": ej,
             "series":    ser,
-            "url":       info.get("url"),
-            "musculos":  info.get("primaryMuscles", []),
+            "url":       inf.get("url"),
+            "musculos":  inf.get("primaryMuscles", []),
+            "custom":    ej not in biblioteca_completa,
         })
     return wip
 
-def obtener_ejercicios_frecuentes(n=60):
-    """Top N ejercicios más usados en historial."""
-    rows = c.execute(
-        "SELECT ejercicio, COUNT(*) as cnt FROM entreno GROUP BY ejercicio ORDER BY cnt DESC LIMIT ?",
-        (n,)
-    ).fetchall()
-    frecuentes = [r[0] for r in rows]
-    # Si no hay historial, caer a ejercicios en rutinas
-    if not frecuentes:
-        frecuentes = [r[0] for r in c.execute(
-            "SELECT DISTINCT ejercicio FROM rutinas ORDER BY ejercicio"
-        ).fetchall()]
-    return frecuentes
-
 def autoguardar():
-    """Persiste en DB si han pasado >2s desde último guardado y hay datos."""
     nombre = st.session_state.rutina_wip_nombre.strip()
     if nombre and st.session_state.rutina_wip:
         now = time.time()
@@ -107,34 +161,38 @@ def autoguardar():
             st.session_state.guardado_ts = now
 
 # ══════════════════════════════════════════════════════════════════
-# HELPERS WIP (Workout In Progress)
+# HELPERS — WIP
 # ══════════════════════════════════════════════════════════════════
-def agregar_ejercicio_wip(ej_nombre):
-    """Agrega un ejercicio a la rutina en construcción."""
-    info = biblioteca_completa.get(ej_nombre, {})
-    # Evitar duplicados
+def agregar_ejercicio_wip(ej_nombre, n_series=3, es_custom=False):
+    ej_nombre = ej_nombre.strip()
+    if not ej_nombre:
+        return False
     existentes = [e["ejercicio"] for e in st.session_state.rutina_wip]
     if ej_nombre in existentes:
         st.toast(f"⚠️ {ej_nombre} ya está en la rutina")
         return False
+    inf = info_ejercicio(ej_nombre)
+    # Si no existe en biblioteca, guardarlo como custom
+    if ej_nombre not in biblioteca_completa:
+        guardar_ejercicio_custom(ej_nombre)
+        es_custom = True
     st.session_state.rutina_wip.append({
         "ejercicio": ej_nombre,
-        "series":    3,
-        "url":       info.get("url"),
-        "musculos":  info.get("primaryMuscles", []),
+        "series":    n_series,
+        "url":       inf.get("url"),
+        "musculos":  inf.get("primaryMuscles", []),
+        "custom":    es_custom,
     })
     autoguardar()
     return True
 
 def eliminar_ejercicio_wip(idx):
-    """Elimina con buffer de undo."""
     item = st.session_state.rutina_wip[idx]
     st.session_state.undo_buffer = {"ejercicio": item.copy(), "pos": idx, "ts": time.time()}
     st.session_state.rutina_wip.pop(idx)
     autoguardar()
 
 def mover_ejercicio_wip(idx, direccion):
-    """Mueve ejercicio arriba (-1) o abajo (+1)."""
     wip = st.session_state.rutina_wip
     nuevo_idx = idx + direccion
     if 0 <= nuevo_idx < len(wip):
@@ -142,29 +200,145 @@ def mover_ejercicio_wip(idx, direccion):
         autoguardar()
 
 def set_series_wip(idx, valor):
-    """Actualiza el número de series de un ejercicio."""
     st.session_state.rutina_wip[idx]["series"] = max(1, int(valor))
     autoguardar()
 
 def calcular_volumen_estimado():
-    """Calcula total de ejercicios, series y desglose por músculo."""
     if not st.session_state.rutina_wip:
         return 0, 0, {}
     total_ej  = len(st.session_state.rutina_wip)
     total_ser = sum(e["series"] for e in st.session_state.rutina_wip)
     por_musculo = {}
     for item in st.session_state.rutina_wip:
-        for m in item["musculos"]:
+        for m in item.get("musculos", []):
             me = m_es(m)
             por_musculo[me] = por_musculo.get(me, 0) + item["series"]
     return total_ej, total_ser, por_musculo
+
+# ══════════════════════════════════════════════════════════════════
+# COMPONENTE REUTILIZABLE — Selector de series compacto
+# Usado tanto en modo visual como en modo rápido
+# ══════════════════════════════════════════════════════════════════
+def widget_series(key_prefix="main"):
+    """
+    Muestra − N + en una sola línea.
+    Lee y escribe en st.session_state['series_para_agregar'].
+    """
+    val = st.session_state.series_para_agregar
+    c1, c2, c3 = st.columns([1, 2, 1])
+    if c1.button("−", key=f"ser_menos_{key_prefix}", use_container_width=True):
+        st.session_state.series_para_agregar = max(1, val - 1)
+        st.rerun()
+    c2.markdown(
+        f"<div style='text-align:center;font-size:20px;font-weight:700;"
+        f"line-height:38px;border:1px solid #333;border-radius:8px'>"
+        f"{st.session_state.series_para_agregar}</div>",
+        unsafe_allow_html=True,
+    )
+    if c3.button("＋", key=f"ser_mas_{key_prefix}", use_container_width=True):
+        st.session_state.series_para_agregar = min(20, val + 1)
+        st.rerun()
+
+# ══════════════════════════════════════════════════════════════════
+# COMPONENTE REUTILIZABLE — Tarjetas de rutina en vivo
+# Se usa en tab_crear (y puede reusarse en mis_rutinas si se importa)
+# ══════════════════════════════════════════════════════════════════
+def render_tarjetas_wip(nombre_rutina_actual):
+    wip = st.session_state.rutina_wip
+
+    if not wip:
+        st.markdown(
+            "<div style='color:#555;font-size:14px;padding:24px;text-align:center;"
+            "border:1px dashed #333;border-radius:10px;margin-top:4px'>"
+            "Los ejercicios que agregues aparecerán aquí</div>",
+            unsafe_allow_html=True,
+        )
+        return
+
+    # ── Undo ──────────────────────────────────────────────────
+    undo = st.session_state.undo_buffer
+    if undo and (time.time() - undo["ts"]) < 8:
+        cu1, cu2 = st.columns([3, 1])
+        cu1.warning(f"🗑️ **{undo['ejercicio']['ejercicio']}** eliminado")
+        if cu2.button("↩️ Deshacer", use_container_width=True):
+            pos = min(undo["pos"], len(wip))
+            st.session_state.rutina_wip.insert(pos, undo["ejercicio"])
+            st.session_state.undo_buffer = None
+            autoguardar()
+            st.rerun()
+    elif undo:
+        st.session_state.undo_buffer = None
+
+    # ── Tarjetas ──────────────────────────────────────────────
+    for i, item in enumerate(wip):
+        with st.container(border=True):
+            col_img, col_info = st.columns([1, 4])
+
+            # Thumbnail pequeño
+            with col_img:
+                url = item.get("url") or IMG_PLACEHOLDER
+                st.image(url, use_container_width=True)
+
+            with col_info:
+                # Nombre + badge custom
+                badge = " `custom`" if item.get("custom") else ""
+                musculos_txt = ", ".join([m_es(m) for m in item.get("musculos", [])])
+                st.markdown(f"**{item['ejercicio']}**{badge}")
+                if musculos_txt:
+                    st.caption(musculos_txt)
+
+                # UNA SOLA FILA: #series | − | + | ✕
+                c_num, c_sm, c_sp, c_del = st.columns([2, 1, 1, 1])
+                c_num.markdown(
+                    f"<div style='font-weight:700;font-size:15px;line-height:36px'>"
+                    f"{item['series']} series</div>",
+                    unsafe_allow_html=True,
+                )
+                if c_sm.button("−", key=f"sm_{i}", use_container_width=True):
+                    set_series_wip(i, item["series"] - 1)
+                    st.rerun()
+                if c_sp.button("＋", key=f"sp_{i}", use_container_width=True):
+                    set_series_wip(i, item["series"] + 1)
+                    st.rerun()
+                if c_del.button("✕", key=f"del_{i}", use_container_width=True):
+                    eliminar_ejercicio_wip(i)
+                    st.rerun()
+
+    # ── Volumen estimado ───────────────────────────────────────
+    st.divider()
+    total_ej, total_ser, por_musculo = calcular_volumen_estimado()
+    cv1, cv2 = st.columns(2)
+    cv1.metric("Ejercicios", total_ej)
+    cv2.metric("Series totales", total_ser)
+
+    if por_musculo:
+        st.caption("**Distribución por músculo:**")
+        max_s = max(por_musculo.values())
+        for mus, ser in sorted(por_musculo.items(), key=lambda x: -x[1]):
+            cl, cb, cn = st.columns([2, 3, 1])
+            cl.caption(mus)
+            cb.progress(ser / max_s)
+            warn = " ⚠️" if ser < 2 else ""
+            cn.caption(f"**{ser}**{warn}")
+
+    # ── Estado de guardado ─────────────────────────────────────
+    if nombre_rutina_actual.strip() and wip:
+        ts = st.session_state.guardado_ts
+        if ts > 0:
+            hace = int(time.time() - ts)
+            st.caption("✅ Guardado" if hace < 10 else f"💾 Guardado hace {hace}s")
+        else:
+            if st.button("💾 Guardar rutina", use_container_width=True, type="primary"):
+                persistir_rutina_db(nombre_rutina_actual.strip(), wip)
+                st.session_state.guardado_ts = time.time()
+                st.toast(f"✅ Rutina '{nombre_rutina_actual}' guardada")
+                st.rerun()
 
 # ══════════════════════════════════════════════════════════════════
 # UI PRINCIPAL
 # ══════════════════════════════════════════════════════════════════
 st.title("🏋️ Crear Rutinas")
 
-# ── Tabs: Crear nueva / Gestionar existentes ──────────────────────
 tab_crear, tab_gestionar = st.tabs(["✏️ Crear / Editar", "📋 Mis Rutinas"])
 
 # ══════════════════════════════════════════════════════════════════
@@ -172,268 +346,212 @@ tab_crear, tab_gestionar = st.tabs(["✏️ Crear / Editar", "📋 Mis Rutinas"]
 # ══════════════════════════════════════════════════════════════════
 with tab_crear:
 
-    # ── Nombre de la rutina (requisito primero) ───────────────
+    # ── Nombre ────────────────────────────────────────────────
     col_nom, col_rst = st.columns([3, 1])
     nombre_input = col_nom.text_input(
-        "Nombre de la rutina",
+        "Nombre",
         value=st.session_state.rutina_wip_nombre,
-        placeholder="Ej: Push Day, Piernas Lunes...",
+        placeholder="Ej: Push Day, Piernas...",
         label_visibility="collapsed",
     )
-
-    # Detectar cambio de nombre
     if nombre_input != st.session_state.rutina_wip_nombre:
         st.session_state.rutina_wip_nombre = nombre_input
         if nombre_input.strip():
             autoguardar()
 
-    if col_rst.button("🗑️ Limpiar", use_container_width=True, help="Limpiar y empezar de nuevo"):
+    if col_rst.button("🗑️ Limpiar", use_container_width=True):
         st.session_state.rutina_wip        = []
         st.session_state.rutina_wip_nombre = ""
         st.session_state.undo_buffer       = None
         st.session_state.editando_rutina   = None
+        st.session_state.guardado_ts       = 0
         st.rerun()
 
     if not nombre_input.strip():
-        st.info("👆 Escribe un nombre para la rutina para empezar a construirla.")
+        st.info("👆 Escribe un nombre para la rutina para empezar.")
+        st.stop()
 
     st.divider()
 
+    # ── Toggle modo Visual / Rápido ───────────────────────────
+    modo = st.radio(
+        "modo",
+        ["🖼️ Visual", "⚡ Entrada rápida"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="modo_radio",
+    )
+    st.session_state.modo_input = modo
+
+    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+
+    col_izq, col_der = st.columns([1, 1], gap="medium")
+
     # ══════════════════════════════════════════════════════════
-    # PANEL IZQUIERDO: Selector + Panel derecho: Rutina en vivo
-    # En móvil se apilan (Streamlit lo hace automático con columns)
+    # MODO VISUAL — igual que antes, series compactas
     # ══════════════════════════════════════════════════════════
-    col_sel, col_rutina = st.columns([1, 1], gap="medium")
-
-    # ─────────────────────────────────────────────────────────
-    # COLUMNA IZQUIERDA — Selector de ejercicios
-    # ─────────────────────────────────────────────────────────
-    with col_sel:
-        st.subheader("➕ Agregar ejercicio")
-
-        # Fuente: Biblioteca / Frecuentes
-        fuente = st.radio(
-            "Fuente",
-            ["Biblioteca completa", "⭐ Frecuentes"],
-            index=0 if st.session_state.filtro_fuente == "Biblioteca completa" else 1,
-            horizontal=True,
-            label_visibility="collapsed",
-        )
-        st.session_state.filtro_fuente = fuente
-
-        # Filtro de grupo muscular (persistente)
-        opciones_grupos = ["Todos"] + [m_es(g) for g in grupos_musculares]
-        idx_grupo_actual = (
-            opciones_grupos.index(st.session_state.filtro_grupo)
-            if st.session_state.filtro_grupo in opciones_grupos else 0
-        )
-        grupo_sel_es = st.selectbox(
-            "🎯 Músculo",
-            opciones_grupos,
-            index=idx_grupo_actual,
-            key="sel_grupo_muscular",
-        )
-        st.session_state.filtro_grupo = grupo_sel_es
-
-        # Convertir ES → EN
-        grupo_sel_en = None
-        if grupo_sel_es != "Todos":
-            for en, es in TRAD.items():
-                if es == grupo_sel_es:
-                    grupo_sel_en = en
-                    break
-
-        # Obtener lista según fuente + filtro
-        if fuente == "⭐ Frecuentes":
-            frecuentes_list = obtener_ejercicios_frecuentes()
-            if grupo_sel_en:
-                ejs_disponibles = sorted([
-                    ej for ej in frecuentes_list
-                    if grupo_sel_en in biblioteca_completa.get(ej, {}).get("primaryMuscles", [])
-                ])
-            else:
-                ejs_disponibles = sorted(frecuentes_list)
-        else:
-            if grupo_sel_en:
-                ejs_disponibles = sorted([
-                    n for n, info in biblioteca_completa.items()
-                    if grupo_sel_en in info.get("primaryMuscles", [])
-                ])
-            else:
-                ejs_disponibles = sorted(biblioteca_completa.keys())
-
-        if not ejs_disponibles:
-            st.warning("No hay ejercicios con ese filtro.")
-        else:
-            st.caption(f"{len(ejs_disponibles)} ejercicios")
-
-            # Mantener última selección si sigue disponible
-            ultimo_valido = (
-                st.session_state.ultimo_ej_sel
-                if st.session_state.ultimo_ej_sel in ejs_disponibles
-                else ejs_disponibles[0]
-            )
-            idx_ultimo = ejs_disponibles.index(ultimo_valido) if ultimo_valido in ejs_disponibles else 0
-
-            ej_sel = st.selectbox(
-                "Ejercicio",
-                ejs_disponibles,
-                index=idx_ultimo,
-                key="sel_ejercicio_main",
+    if modo == "🖼️ Visual":
+        with col_izq:
+            # Fuente
+            fuente = st.radio(
+                "Fuente",
+                ["Biblioteca completa", "⭐ Frecuentes"],
+                horizontal=True,
+                index=0 if st.session_state.filtro_fuente == "Biblioteca completa" else 1,
                 label_visibility="collapsed",
             )
-            # Guardar selección actual (no resetear al agregar)
-            st.session_state.ultimo_ej_sel = ej_sel
+            st.session_state.filtro_fuente = fuente
 
-            # Preview del ejercicio seleccionado
-            if ej_sel:
-                info_sel = biblioteca_completa.get(ej_sel, {})
-                if info_sel.get("url"):
-                    st.image(info_sel["url"], use_container_width=True)
-                musculos_txt = ", ".join([m_es(m) for m in info_sel.get("primaryMuscles", [])])
-                nivel_txt    = info_sel.get("level", "").title()
-                equipo_txt   = info_sel.get("equipment", "").title()
+            # Filtro músculo
+            opciones_grupos = ["Todos"] + [m_es(g) for g in grupos_musculares]
+            idx_g = (opciones_grupos.index(st.session_state.filtro_grupo)
+                     if st.session_state.filtro_grupo in opciones_grupos else 0)
+            grupo_es = st.selectbox("🎯 Músculo", opciones_grupos,
+                                    index=idx_g, key="sel_grupo")
+            st.session_state.filtro_grupo = grupo_es
+
+            grupo_en = next(
+                (en for en, es in TRAD.items() if es == grupo_es), None
+            ) if grupo_es != "Todos" else None
+
+            # Lista según fuente + filtro
+            if fuente == "⭐ Frecuentes":
+                base = obtener_ejercicios_frecuentes()
+                ejs  = sorted([e for e in base
+                               if grupo_en is None or
+                               grupo_en in biblioteca_completa.get(e, {}).get("primaryMuscles", [])])
+            else:
+                ejs = sorted([
+                    n for n, inf in biblioteca_completa.items()
+                    if grupo_en is None or grupo_en in inf.get("primaryMuscles", [])
+                ])
+
+            if not ejs:
+                st.warning("Sin ejercicios con ese filtro.")
+            else:
+                st.caption(f"{len(ejs)} ejercicios")
+                ultimo_v = (st.session_state.ultimo_ej_sel
+                            if st.session_state.ultimo_ej_sel in ejs else ejs[0])
+                idx_ej = ejs.index(ultimo_v) if ultimo_v in ejs else 0
+
+                ej_sel = st.selectbox("Ejercicio", ejs, index=idx_ej,
+                                      key="sel_ej_visual",
+                                      label_visibility="collapsed")
+                st.session_state.ultimo_ej_sel = ej_sel
+
+                # Preview
+                inf_sel = biblioteca_completa.get(ej_sel, {})
+                if inf_sel.get("url"):
+                    st.image(inf_sel["url"], use_container_width=True)
+                musculos_txt = ", ".join([m_es(m) for m in inf_sel.get("primaryMuscles", [])])
+                nivel_txt    = inf_sel.get("level", "").title()
+                equipo_txt   = inf_sel.get("equipment", "").title()
                 if musculos_txt: st.caption(f"💪 {musculos_txt}")
-                if nivel_txt:    st.caption(f"📊 {nivel_txt}  |  🔧 {equipo_txt}")
+                if nivel_txt:    st.caption(f"📊 {nivel_txt}  ·  🔧 {equipo_txt}")
 
-                # Botón de agregar principal
-                if st.button(
-                    f"➕ Agregar a la rutina",
-                    use_container_width=True,
-                    type="primary",
-                    disabled=not nombre_input.strip(),
-                    help="Escribe el nombre de la rutina primero" if not nombre_input.strip() else "",
-                ):
-                    ok = agregar_ejercicio_wip(ej_sel)
-                    if ok:
-                        st.toast(f"✅ {ej_sel} agregado")
+                # Series compacto
+                st.caption("Series:")
+                widget_series("visual")
+
+                # Agregar
+                if st.button("➕ Agregar", use_container_width=True,
+                             type="primary", key="btn_agregar_visual"):
+                    n = st.session_state.series_para_agregar
+                    if agregar_ejercicio_wip(ej_sel, n):
+                        st.toast(f"✅ {ej_sel} — {n} series")
                     st.rerun()
 
-    # ─────────────────────────────────────────────────────────
-    # COLUMNA DERECHA — Rutina en construcción (tarjetas en vivo)
-    # ─────────────────────────────────────────────────────────
-    with col_rutina:
-        st.subheader("📋 Tu rutina")
-
-        wip = st.session_state.rutina_wip
-
-        if not wip:
-            st.markdown(
-                "<div style='color:#555;font-size:14px;padding:20px;text-align:center;"
-                "border:1px dashed #333;border-radius:10px;margin-top:8px'>"
-                "Los ejercicios que agregues aparecerán aquí</div>",
-                unsafe_allow_html=True,
+    # ══════════════════════════════════════════════════════════
+    # MODO RÁPIDO — text_input libre + sugerencias + crear custom
+    # ══════════════════════════════════════════════════════════
+    else:
+        with col_izq:
+            # ── Text input libre (permite cualquier texto) ────
+            texto_rapido = st.text_input(
+                "quick_input",
+                value=st.session_state.get("quick_texto", ""),
+                placeholder="Escribe el nombre del ejercicio...",
+                label_visibility="collapsed",
+                key="quick_input_field",
             )
-        else:
-            # ── Undo buffer ──────────────────────────────────
-            undo = st.session_state.undo_buffer
-            if undo and (time.time() - undo["ts"]) < 8:
-                col_u1, col_u2 = st.columns([3, 1])
-                col_u1.warning(f"🗑️ **{undo['ejercicio']['ejercicio']}** eliminado")
-                if col_u2.button("↩️ Deshacer", use_container_width=True):
-                    pos  = min(undo["pos"], len(st.session_state.rutina_wip))
-                    st.session_state.rutina_wip.insert(pos, undo["ejercicio"])
-                    st.session_state.undo_buffer = None
-                    autoguardar()
-                    st.rerun()
-            elif undo:
-                st.session_state.undo_buffer = None  # Expiró
+            st.session_state.quick_texto = texto_rapido
 
-            # ── Tarjetas de ejercicios ────────────────────────
-            for i, item in enumerate(wip):
-                with st.container(border=True):
-                    row_img, row_info = st.columns([1, 3])
+            # ── Sugerencias dinámicas ─────────────────────────
+            custom_ejs   = obtener_ejercicios_custom()
+            sugerencias  = buscar_sugerencias(texto_rapido) if texto_rapido.strip() else []
+            ej_confirmado = st.session_state.get("quick_ej_confirmado", None)
 
-                    # Thumbnail
-                    with row_img:
-                        if item.get("url"):
-                            st.image(item["url"], use_container_width=True)
-                        else:
-                            st.markdown("🏋️", unsafe_allow_html=False)
-
-                    # Info + controles
-                    with row_info:
-                        musculos_txt = ", ".join([m_es(m) for m in item.get("musculos", [])])
-                        st.markdown(f"**{item['ejercicio']}**")
-                        if musculos_txt:
-                            st.caption(musculos_txt)
-
-                        # ── Botones rápidos de series ─────────
-                        st.caption("Series:")
-                        bc1, bc2, bc3, bc4, bc5, bc_plus, bc_num = st.columns([1,1,1,1,1,1,2])
-                        for btn_col, val in zip([bc1,bc2,bc3,bc4,bc5],[2,3,4,5,6]):
-                            if btn_col.button(
-                                str(val),
-                                key=f"ser_{i}_{val}",
-                                use_container_width=True,
-                                type="primary" if item["series"] == val else "secondary",
-                            ):
-                                set_series_wip(i, val)
-                                st.rerun()
-                        if bc_plus.button("＋", key=f"ser_plus_{i}", use_container_width=True):
-                            set_series_wip(i, item["series"] + 1)
-                            st.rerun()
-                        # Número editable como fallback
-                        nuevo_val = bc_num.number_input(
-                            "s",
-                            min_value=1, max_value=20,
-                            value=item["series"],
-                            key=f"ser_num_{i}",
-                            label_visibility="collapsed",
-                        )
-                        if nuevo_val != item["series"]:
-                            set_series_wip(i, nuevo_val)
-                            st.rerun()
-
-                        # ── Controles de posición + eliminar ──
-                        ca, cb, cc = st.columns([1, 1, 1])
-                        if ca.button("↑", key=f"up_{i}", use_container_width=True,
-                                     disabled=(i == 0)):
-                            mover_ejercicio_wip(i, -1)
-                            st.rerun()
-                        if cb.button("↓", key=f"down_{i}", use_container_width=True,
-                                     disabled=(i == len(wip) - 1)):
-                            mover_ejercicio_wip(i, +1)
-                            st.rerun()
-                        if cc.button("✕", key=f"del_{i}", use_container_width=True):
-                            eliminar_ejercicio_wip(i)
-                            st.rerun()
-
-            # ── Volumen estimado en vivo ──────────────────────
-            st.divider()
-            total_ej, total_ser, por_musculo = calcular_volumen_estimado()
-
-            col_v1, col_v2 = st.columns(2)
-            col_v1.metric("Ejercicios", total_ej)
-            col_v2.metric("Series totales", total_ser)
-
-            if por_musculo:
-                st.markdown("**Distribución por músculo:**")
-                max_ser = max(por_musculo.values()) if por_musculo else 1
-                for musculo, series in sorted(por_musculo.items(), key=lambda x: -x[1]):
-                    pct  = series / max_ser
-                    warn = " ⚠️" if series < 2 else ""
-                    col_lbl, col_bar, col_num = st.columns([2, 3, 1])
-                    col_lbl.caption(musculo)
-                    col_bar.progress(pct)
-                    col_num.caption(f"**{series}**{warn}")
-
-            # ── Estado de guardado ────────────────────────────
-            if nombre_input.strip() and wip:
-                ts = st.session_state.guardado_ts
-                if ts > 0:
-                    hace = int(time.time() - ts)
-                    if hace < 10:
-                        st.caption("✅ Guardado automáticamente")
-                    else:
-                        st.caption(f"💾 Último guardado hace {hace}s")
-                else:
-                    # Primer guardado al finalizar
-                    if st.button("💾 Guardar rutina", use_container_width=True, type="primary"):
-                        persistir_rutina_db(nombre_input.strip(), wip)
-                        st.session_state.guardado_ts = time.time()
-                        st.toast(f"✅ Rutina '{nombre_input}' guardada")
+            if sugerencias:
+                # Mostrar hasta 6 sugerencias como botones compactos
+                st.caption("Sugerencias:")
+                for sug in sugerencias:
+                    col_sug, col_add_sug = st.columns([4, 1])
+                    col_sug.caption(sug)
+                    if col_add_sug.button("＋", key=f"sug_{sug}", use_container_width=True):
+                        st.session_state.quick_ej_confirmado = sug
+                        st.session_state.quick_texto = sug
                         st.rerun()
+
+            # Si el texto no coincide con nada → opción de crear nuevo
+            texto_limpio = texto_rapido.strip()
+            es_nuevo = (texto_limpio and
+                        texto_limpio not in biblioteca_completa and
+                        texto_limpio not in custom_ejs and
+                        not sugerencias)
+
+            # Ejercicio a usar: confirmado por sugerencia, o el texto libre
+            ej_a_usar = st.session_state.get("quick_ej_confirmado") or texto_limpio
+
+            # Limpiar confirmado si el usuario borró el texto
+            if not texto_limpio:
+                st.session_state.quick_ej_confirmado = None
+                ej_a_usar = None
+
+            if ej_a_usar:
+                inf_r     = info_ejercicio(ej_a_usar)
+                url_r     = inf_r.get("url") or IMG_PLACEHOLDER
+                musculos_r = ", ".join([m_es(m) for m in inf_r.get("primaryMuscles", [])])
+
+                # Preview compacto
+                cp1, cp2 = st.columns([1, 3])
+                cp1.image(url_r, use_container_width=True)
+                cp2.markdown(f"**{ej_a_usar}**")
+                if musculos_r:
+                    cp2.caption(f"💪 {musculos_r}")
+                elif es_nuevo or ej_a_usar not in biblioteca_completa:
+                    cp2.caption("🆕 Ejercicio personalizado")
+
+                # Series compacto
+                st.caption("Series:")
+                widget_series("rapido")
+
+                # Botón agregar
+                btn_lbl = "➕ Crear y agregar" if (es_nuevo or ej_a_usar not in biblioteca_completa) else "➕ Agregar"
+                if st.button(btn_lbl, use_container_width=True,
+                             type="primary", key="btn_agregar_rapido"):
+                    n = st.session_state.series_para_agregar
+                    if agregar_ejercicio_wip(ej_a_usar, n):
+                        st.toast(f"✅ {ej_a_usar} — {n} series")
+                        if ej_a_usar not in biblioteca_completa:
+                            st.toast("🆕 Guardado como ejercicio personalizado")
+                    # Limpiar campo tras agregar
+                    st.session_state.quick_texto         = ""
+                    st.session_state.quick_ej_confirmado = None
+                    st.rerun()
+
+            else:
+                st.markdown(
+                    "<div style='color:#555;font-size:13px;padding:16px;"
+                    "border:1px dashed #333;border-radius:8px;text-align:center'>"
+                    "Escribe arriba para buscar<br>"
+                    "<small>Si no aparece, se crea como ejercicio personalizado</small></div>",
+                    unsafe_allow_html=True,
+                )
+
+    # ── Panel derecho: rutina en vivo (compartido por ambos modos) ──
+    with col_der:
+        st.subheader("📋 Tu rutina")
+        render_tarjetas_wip(nombre_input)
 
 # ══════════════════════════════════════════════════════════════════
 # TAB 2 — GESTIONAR RUTINAS EXISTENTES
@@ -451,37 +569,36 @@ with tab_gestionar:
             ejs_rutina = df_rutinas[df_rutinas['nombre_rutina'] == nombre_r]
 
             with st.expander(f"📋 {nombre_r}  ({len(ejs_rutina)} ejercicios)"):
-
-                # Lista de ejercicios con thumbnail
                 for _, fila in ejs_rutina.iterrows():
-                    info = biblioteca_completa.get(fila['ejercicio'], {})
+                    inf = info_ejercicio(fila['ejercicio'])
                     ci, cn = st.columns([1, 4])
-                    if info.get("url"):
-                        ci.image(info["url"], use_container_width=True)
-                    musculos = ", ".join([m_es(m) for m in info.get("primaryMuscles", [])])
-                    cn.markdown(f"**{fila['ejercicio']}**")
-                    cn.caption(f"{fila['series_planificadas']} series  ·  {musculos}")
+                    url_t = inf.get("url") or IMG_PLACEHOLDER
+                    ci.image(url_t, use_container_width=True)
+                    musculos = ", ".join([m_es(m) for m in inf.get("primaryMuscles", [])])
+                    cn.markdown(f"**{fila['ejercicio']}**"
+                                + (" `custom`" if fila['ejercicio'] not in biblioteca_completa else ""))
+                    cn.caption(f"{fila['series_planificadas']} series"
+                               + (f"  ·  {musculos}" if musculos else ""))
 
                 st.divider()
                 col_ed, col_del_r = st.columns(2)
 
-                # ── Cargar para editar ────────────────────────
-                if col_ed.button("✏️ Editar", key=f"edit_{nombre_r}", use_container_width=True):
+                if col_ed.button("✏️ Editar", key=f"edit_{nombre_r}",
+                                 use_container_width=True):
                     st.session_state.rutina_wip        = cargar_rutina_db(nombre_r)
                     st.session_state.rutina_wip_nombre = nombre_r
                     st.session_state.editando_rutina   = nombre_r
                     st.session_state.guardado_ts       = time.time()
                     st.toast(f"✏️ Editando: {nombre_r}")
-                    # Cambiar a la tab de creación
                     st.rerun()
 
-                # ── Eliminar rutina completa ──────────────────
                 confirm_key = f"confirm_del_r_{nombre_r}"
                 if confirm_key not in st.session_state:
                     st.session_state[confirm_key] = False
 
                 if not st.session_state[confirm_key]:
-                    if col_del_r.button("🗑️ Eliminar", key=f"del_r_{nombre_r}", use_container_width=True):
+                    if col_del_r.button("🗑️ Eliminar", key=f"del_r_{nombre_r}",
+                                        use_container_width=True):
                         st.session_state[confirm_key] = True
                         st.rerun()
                 else:

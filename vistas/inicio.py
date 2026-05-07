@@ -28,7 +28,7 @@ nombre = perfil[0] if perfil else "Atleta"
 hora   = datetime.now().hour
 saludo = "Buenos días" if hora < 12 else ("Buenas tardes" if hora < 19 else "Buenas noches")
 
-st.title(f"🏠 {saludo}, {nombre}!")
+st.title(f"{saludo}, {nombre}!")
 
 # ─── Métricas rápidas ──────────────────────────────────────────────
 total_ses = c.execute("SELECT COUNT(*) FROM sesiones WHERE fin IS NOT NULL").fetchone()[0]
@@ -45,10 +45,10 @@ vol_semana = c.execute(
 ultimo_peso = c.execute("SELECT peso FROM peso_corporal ORDER BY fecha DESC LIMIT 1").fetchone()
 
 col1, col2, col3, col4 = st.columns(4)
-col1.metric("🏋️ Sesiones totales",  total_ses)
-col2.metric("📅 Esta semana",        ses_semana)
-col3.metric("📦 Volumen semana",     f"{vol_semana:,.0f} lb")
-col4.metric("⚖️ Peso actual",        f"{ultimo_peso[0]:.1f} lb" if ultimo_peso else "—")
+col1.metric("***Sesiones totales***",  total_ses)
+col2.metric(" ***Esta semana***",        ses_semana)
+col3.metric(" ***Volumen semana***",     f"{vol_semana:,.0f} lb")
+col4.metric(" ***Peso actual***",        f"{ultimo_peso[0]:.1f} lb" if ultimo_peso else "—")
 
 st.divider()
 
