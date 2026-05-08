@@ -33,206 +33,151 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
-/* APP */
-.stApp,
-section[data-testid="stMain"]{
+/* APP Y FONDO */
+.stApp {
     background:#0f0f0f !important;
     font-family:'DM Sans',sans-serif !important;
     color:#f5f5f5 !important;
 }
 
-/* Container */
-.block-container{
-    padding-top:1.5rem !important;
-    padding-bottom:4rem !important;
-    max-width:1400px;
+/* ELIMINAR ESPACIO SUPERIOR (IGUAL QUE EN STATS) */
+.stAppViewMain > div > div > div {
+    padding-top: 0px !important;
 }
 
-/* Header */
-header[data-testid="stHeader"]{
-    background:#0f0f0f !important;
-    border-bottom:1px solid #1e1e1e !important;
+.block-container {
+    padding-top: 0.5rem !important;
+    padding-bottom: 10rem !important;
+    max-width: 480px !important; /* Mantenemos el ancho móvil */
 }
 
-div[data-testid="stToolbar"]{
-    display:none !important;
+header[data-testid="stHeader"], div[data-testid="stToolbar"] { display:none !important; }
+
+            
+/* BOTÓN REGRESAR PEGADO ARRIBA */
+div[data-testid="stVerticalBlock"] > div:first-child {
+    margin-top: -10px !important;
 }
 
-div[data-testid="stDecoration"]{
-    display:none !important;
+
+            
+
+/* HERO CARD */
+.top-header {
+    background: linear-gradient(135deg, rgba(230,57,70,0.1), rgba(22,22,22,1));
+    border: 1px solid #262626;
+    border-radius: 24px;
+    padding: 24px;
+    margin-bottom: 24px;
 }
 
-/* Sidebar */
-section[data-testid="stSidebar"]{
-    background:#141414 !important;
-    border-right:1px solid #1f1f1f !important;
+.top-kicker {
+    color: #e63946;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
 }
 
-/* Texto */
-h1,h2,h3,h4,h5,h6,p,span,label{
-    font-family:'DM Sans',sans-serif !important;
-    color:#f5f5f5 !important;
+.top-title {
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: white;
 }
 
-/* HERO */
-.top-header{
-    background:
-        linear-gradient(
-            135deg,
-            rgba(230,57,70,0.15),
-            rgba(17,17,17,0.85)
-        );
-    border:1px solid rgba(255,255,255,0.06);
-    border-radius:24px;
-    padding:28px;
-    margin-bottom:24px;
+/* TABS SIMÉTRICOS (IGUAL QUE EN STATS) */
+.stTabs [data-baseweb="tab-list"] {
+    display: flex !important;
+    width: 100% !important;
+    gap: 8px !important;
+    background: transparent !important;
 }
 
-.top-kicker{
-    color:#666;
-    font-size:12px;
-    font-weight:700;
-    letter-spacing:0.14em;
-    text-transform:uppercase;
+.stTabs [data-baseweb="tab"] {
+    flex: 1 !important;
+    justify-content: center !important;
+    background: #171717 !important;
+    border-radius: 12px !important;
+    color: #777 !important;
+    padding: 10px 0px !important;
+    border: none !important;
 }
 
-.top-title{
-    color:white;
-    font-size:36px;
-    font-weight:800;
-    letter-spacing:-0.04em;
-    margin-top:10px;
+.stTabs [aria-selected="true"] {
+    background: linear-gradient(135deg,#ef4444,#dc2626) !important;
+    color: white !important;
 }
 
-.top-sub{
-    color:#888;
-    font-size:14px;
-    margin-top:8px;
-    line-height:1.6;
+/* CARDS DE METAS */
+.glass-card {
+    background: #161616;
+    border: 1px solid #262626;
+    border-radius: 22px;
+    padding: 20px;
+    margin-bottom: 16px;
 }
 
-/* Tabs */
-.stTabs [data-baseweb="tab-list"]{
-    gap:10px;
-    margin-bottom:18px;
+/* INPUTS Y SELECTORS */
+.stTextInput input, .stNumberInput input, .stDateInput input, div[data-baseweb="select"] {
+    background: #1a1a1a !important;
+    border: 1px solid #262626 !important;
+    border-radius: 14px !important;
+    color: white !important;
 }
 
-.stTabs [data-baseweb="tab"]{
-    background:#171717 !important;
-    border-radius:14px;
-    padding:10px 18px;
-    color:#777 !important;
-    font-weight:600;
+.stProgress > div > div > div {
+    background: #e63946 !important;
 }
 
-.stTabs [aria-selected="true"]{
-    background:linear-gradient(135deg,#ef4444,#dc2626) !important;
-    color:white !important;
+/* MÉTRICAS */
+div[data-testid="stMetric"] {
+    background: #1a1a1a !important;
+    border: 1px solid #262626 !important;
+    border-radius: 16px !important;
+    padding: 12px !important;
+}
+            
+
+/* Estilo para el texto de días restantes */
+.dias-label {
+    color: #888;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
 }
 
-/* Inputs */
-.stTextInput input,
-.stNumberInput input,
-.stDateInput input,
-.stSelectbox div[data-baseweb="select"]{
-    background:#1a1a1a !important;
-    border:1px solid #242424 !important;
-    color:white !important;
-    border-radius:14px !important;
+.dias-valor {
+    color: #e63946; /* Rojo para resaltar los días */
+    font-weight: 700;
 }
 
-/* Radio */
-div[role="radiogroup"] label{
-    background:#1a1a1a !important;
-    border:1px solid #242424 !important;
-    border-radius:12px !important;
-    padding:10px 16px !important;
+/* Contenedor de métricas en línea */
+.metricas-inline {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    margin-bottom: 12px;
 }
 
-/* Buttons */
-div[data-testid="stButton"] > button{
-    border-radius:14px !important;
-    font-weight:700 !important;
-    transition:0.2s ease !important;
-    border:none !important;
+.metrica-item {
+    font-size: 14px;
+    color: #aaa;
 }
 
-/* Primario */
-div[data-testid="stButton"] > button[kind="primary"]{
-    background:linear-gradient(135deg,#ef4444,#dc2626) !important;
-    color:white !important;
+.metrica-item strong {
+    color: white;
+    font-size: 15px;
 }
 
-/* Secundario */
-div[data-testid="stButton"] > button[kind="secondary"]{
-    background:#1a1a1a !important;
-    border:1px solid #2a2a2a !important;
-    color:#aaa !important;
+/* Separador sutil */
+.separador-meta {
+    border: 0;
+    border-top: 1px solid #262626;
+    margin: 20px 0;
 }
-
-/* Hover */
-div[data-testid="stButton"] > button:hover{
-    transform:translateY(-1px);
-    filter:brightness(1.05);
-}
-
-/* Cards */
-.glass-card{
-    background:#1a1a1a;
-    border:1px solid #242424;
-    border-radius:22px;
-    padding:22px;
-    margin-bottom:18px;
-}
-
-/* Metrics */
-div[data-testid="stMetric"]{
-    background:#1a1a1a !important;
-    border:1px solid #242424 !important;
-    border-radius:18px !important;
-    padding:18px !important;
-}
-
-div[data-testid="stMetricValue"]{
-    color:white !important;
-    font-weight:700 !important;
-}
-
-div[data-testid="stMetricLabel"]{
-    color:#666 !important;
-}
-
-/* Progress */
-.stProgress > div > div{
-    background:#dc2626 !important;
-    border-radius:999px !important;
-    overflow:hidden;
-}
-
-.stProgress > div > div > div{
-    background:linear-gradient(90deg,#333333,#333333) !important;
-    border-radius:999px !important;
-}
-
-/* Alerts */
-div[data-testid="stAlert"]{
-    border-radius:16px !important;
-}
-
-/* Scroll */
-::-webkit-scrollbar{
-    width:10px;
-}
-
-::-webkit-scrollbar-thumb{
-    background:#2b2b2b;
-    border-radius:20px;
-}
-
-/* Footer */
-footer{
-    display:none !important;
-}
+            
 </style>
 """, unsafe_allow_html=True)
 
@@ -354,151 +299,48 @@ with tab1:
     else:
 
         for meta in metas:
-
             mid, ejercicio, tipo, objetivo, fecha_lim, fecha_cre = meta
-
             actual = valor_actual(ejercicio, tipo)
+            
+            progreso = min(100, int((actual / objetivo) * 100)) if objetivo > 0 else 0
+            dias_rest = (datetime.strptime(fecha_lim, "%Y-%m-%d").date() - date.today()).days
 
-            progreso = min(
-                100,
-                int((actual / objetivo) * 100)
-            ) if objetivo > 0 else 0
+            # --- TODO EL CONTENIDO EN UN SOLO MARKDOWN ---
+            st.markdown(f"""
+            <div class="glass-card">
+                <div style="color:#666; font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;">
+                    {etiqueta_tipo(tipo)}
+                </div>
+                <div style="font-size:24px; font-weight:800; color:white; margin-bottom:8px;">
+                    {ejercicio}
+                </div>
+                <div class="dias-label">
+                    Días restantes: <span class="dias-valor">{max(dias_rest, 0)}</span>
+                </div>
+                </div>
+            """, unsafe_allow_html=True)
 
-            dias_rest = (
-                datetime.strptime(fecha_lim, "%Y-%m-%d").date()
-                - date.today()
-            ).days
+            # La barra de progreso de Streamlit (que no se puede meter en el HTML de arriba)
+            st.progress(progreso / 100)
 
-            with st.container(border=False):
+            # Métricas y botones alineados
+            st.markdown(f"""
+            <div class="metricas-inline">
+                <div class="metrica-item">Actual: <strong>{actual:.1f}</strong></div>
+                <div class="metrica-item">Objetivo: <strong>{objetivo:.1f}</strong></div>
+                <div class="metrica-item">Progreso: <strong>{progreso}%</strong></div>
+            </div>
+            """, unsafe_allow_html=True)
 
-                st.markdown(
-                    "<div class='glass-card'>",
-                    unsafe_allow_html=True
-                )
-
-                a, b = st.columns([4, 1])
-
-                with a:
-                    st.markdown(
-                        f"""
-                        <div style="
-                            color:#666;
-                            font-size:11px;
-                            font-weight:700;
-                            letter-spacing:0.12em;
-                            text-transform:uppercase;
-                        ">
-                            {etiqueta_tipo(tipo)}
-                        </div>
-
-                        <div style="
-                            font-size:28px;
-                            font-weight:800;
-                            margin-top:6px;
-                            color:white;
-                        ">
-                            {ejercicio}
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
-
-                with b:
-                    st.metric(
-                        "Días",
-                        max(dias_rest, 0)
-                    )
-
-                st.progress(progreso / 100)
-
-                c1, c2, c3 = st.columns(3)
-
-                c1.metric(
-                    "Actual",
-                    f"{actual:.1f}"
-                )
-
-                c2.metric(
-                    "Objetivo",
-                    f"{objetivo:.1f}"
-                )
-
-                c3.metric(
-                    "Progreso",
-                    f"{progreso}%"
-                )
-
-                # Gráfico
-                df = pd.read_sql_query("""
-                    SELECT DATE(fecha) as dia,
-                    MAX(
-                        CASE
-                            WHEN ?='peso' THEN peso
-                            WHEN ?='reps' THEN reps
-                            ELSE peso*reps
-                        END
-                    ) as val
-                    FROM entreno
-                    WHERE ejercicio=?
-                    GROUP BY dia
-                    ORDER BY dia
-                """, conn, params=(tipo, tipo, ejercicio))
-
-                if len(df) > 1:
-
-                    df["dia"] = pd.to_datetime(df["dia"])
-
-                    chart = alt.Chart(df).mark_line(
-                        strokeWidth=3,
-                        color="#ef4444"
-                    ).encode(
-                        x=alt.X("dia:T", title=None),
-                        y=alt.Y("val:Q", title=None),
-                        tooltip=["dia:T", "val:Q"]
-                    ).properties(
-                        height=140
-                    )
-
-                    st.altair_chart(
-                        chart,
-                        use_container_width=True
-                    )
-
-                aa, bb = st.columns(2)
-
+            # Botones
+            c1, c2 = st.columns(2)
+            with c1:
                 if progreso >= 100:
-                    if aa.button(
-                        "🏆 Completar",
-                        key=f"done_{mid}",
-                        use_container_width=True,
-                        type="primary"
-                    ):
-                        c.execute(
-                            "UPDATE metas SET completada=1 WHERE id=?",
-                            (mid,)
-                        )
-
-                        conn.commit()
-
-                        st.toast("🎉 Meta completada")
-                        st.rerun()
-
-                if bb.button(
-                    "🗑️ Eliminar",
-                    key=f"del_{mid}",
-                    use_container_width=True
-                ):
-                    c.execute(
-                        "DELETE FROM metas WHERE id=?",
-                        (mid,)
-                    )
-
-                    conn.commit()
-
-                    st.toast("Meta eliminada")
-                    st.rerun()
-
-                st.markdown("</div>", unsafe_allow_html=True)
+                    st.button("🏆 Completar", key=f"done_{mid}", use_container_width=True, type="primary")
+            with c2:
+                st.button("🗑️ Eliminar", key=f"del_{mid}", use_container_width=True, type="secondary")
+            
+            st.markdown("<hr class='separador-meta'>", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────
 # NUEVA META

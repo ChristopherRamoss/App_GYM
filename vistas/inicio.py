@@ -54,8 +54,7 @@ div[data-testid="stButton"] > button[kind="secondary"] {
     border-radius: 12px !important;
     font-family: 'DM Sans', sans-serif !important;
     color: #aaa !important;
-}
-
+}       
 /* Métricas */
 div[data-testid="stMetric"] {
     background: #1a1a1a !important;

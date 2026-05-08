@@ -33,6 +33,7 @@ def init_db():
 
 init_db()
 
+# Navegación — el CSS lo inyecta cada vista individualmente
 inicio_page       = st.Page("vistas/inicio.py",          title="Inicio",          icon="🏠")
 entreno_page      = st.Page("vistas/entrenamientos.py",  title="Rutinas",         icon="📋")
 mis_rutinas_page  = st.Page("vistas/mis_rutinas.py",     title="Entrenar",        icon="▶️")
