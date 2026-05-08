@@ -20,7 +20,14 @@ c.execute("""CREATE TABLE IF NOT EXISTS rutinas
 c.execute("""CREATE TABLE IF NOT EXISTS ejercicios_custom
              (id INTEGER PRIMARY KEY AUTOINCREMENT,
               nombre TEXT UNIQUE,
+              musculos TEXT DEFAULT '',
               fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP)""")
+# Migración: agregar columna musculos si no existe (para DBs existentes)
+try:
+    c.execute("ALTER TABLE ejercicios_custom ADD COLUMN musculos TEXT DEFAULT ''")
+    conn.commit()
+except Exception:
+    pass
 conn.commit()
 
 # ─── DATOS ────────────────────────────────────────────────────────
@@ -47,7 +54,7 @@ _defaults = {
     "rutina_wip":         [],
     "rutina_wip_nombre":  "",
     "filtro_grupo":       "Todos",
-    "filtro_fuente":      "Biblioteca completa",
+    "filtro_fuente":      "Todos",
     "ultimo_ej_sel":      None,
     "undo_buffer":        None,
     "editando_rutina":    None,
@@ -69,12 +76,38 @@ def obtener_ejercicios_custom():
     rows = c.execute("SELECT nombre FROM ejercicios_custom ORDER BY nombre").fetchall()
     return [r[0] for r in rows]
 
-def guardar_ejercicio_custom(nombre):
+def guardar_ejercicio_custom(nombre, musculos_en=""):
+    """
+    Guarda ejercicio custom. musculos_en es string separado por coma (inglés).
+    Retorna True si se creó nuevo, False si ya existía.
+    """
+    existente = c.execute(
+        "SELECT id FROM ejercicios_custom WHERE nombre=?", (nombre,)
+    ).fetchone()
+    if existente:
+        return False   # Ya existe
     try:
-        c.execute("INSERT OR IGNORE INTO ejercicios_custom (nombre) VALUES (?)", (nombre,))
+        c.execute(
+            "INSERT INTO ejercicios_custom (nombre, musculos) VALUES (?,?)",
+            (nombre, musculos_en)
+        )
         conn.commit()
+        return True
     except Exception:
-        pass
+        return False
+
+def eliminar_ejercicio_custom(nombre):
+    c.execute("DELETE FROM ejercicios_custom WHERE nombre=?", (nombre,))
+    conn.commit()
+
+def obtener_info_custom(nombre):
+    """Retorna dict con musculos para ejercicios custom."""
+    row = c.execute(
+        "SELECT musculos FROM ejercicios_custom WHERE nombre=?", (nombre,)
+    ).fetchone()
+    if not row:
+        return []
+    return [m.strip() for m in row[0].split(",") if m.strip()]
 
 def obtener_ejercicios_frecuentes(n=80):
     rows = c.execute(
@@ -115,10 +148,11 @@ def buscar_sugerencias(texto, limite=8):
     return resultado[:limite]
 
 def info_ejercicio(nombre):
-    """Devuelve info del ejercicio (biblioteca o vacío para custom)."""
+    """Devuelve info del ejercicio (biblioteca o musculos custom si aplica)."""
     info = biblioteca_completa.get(nombre, {})
     if not info:
-        info = {"url": None, "primaryMuscles": [], "level": "", "equipment": ""}
+        musculos_custom = obtener_info_custom(nombre)
+        info = {"url": None, "primaryMuscles": musculos_custom, "level": "", "equipment": ""}
     return info
 
 # ══════════════════════════════════════════════════════════════════
@@ -172,14 +206,14 @@ def agregar_ejercicio_wip(ej_nombre, n_series=3, es_custom=False):
         st.toast(f"⚠️ {ej_nombre} ya está en la rutina")
         return False
     inf = info_ejercicio(ej_nombre)
-    # Si no existe en biblioteca, guardarlo como custom
+    # Si no existe en biblioteca, es custom (musculos ya guardados aparte)
     if ej_nombre not in biblioteca_completa:
-        guardar_ejercicio_custom(ej_nombre)
         es_custom = True
+    url_ej = inf.get("url") if ej_nombre in biblioteca_completa else None
     st.session_state.rutina_wip.append({
         "ejercicio": ej_nombre,
         "series":    n_series,
-        "url":       inf.get("url"),
+        "url":       url_ej,
         "musculos":  inf.get("primaryMuscles", []),
         "custom":    es_custom,
     })
@@ -274,10 +308,18 @@ def render_tarjetas_wip(nombre_rutina_actual):
         with st.container(border=True):
             col_img, col_info = st.columns([1, 4])
 
-            # Thumbnail pequeño
+            # Thumbnail pequeño (solo si hay imagen real)
             with col_img:
-                url = item.get("url") or IMG_PLACEHOLDER
-                st.image(url, use_container_width=True)
+                url = item.get("url")
+                if url:
+                    st.image(url, use_container_width=True)
+                else:
+                    st.markdown(
+                        "<div style='width:100%;aspect-ratio:1;background:#1e1e1e;"
+                        "border-radius:8px;display:flex;align-items:center;"
+                        "justify-content:center;font-size:24px'>🏋️</div>",
+                        unsafe_allow_html=True
+                    )
 
             with col_info:
                 # Nombre + badge custom
@@ -339,7 +381,7 @@ def render_tarjetas_wip(nombre_rutina_actual):
 # ══════════════════════════════════════════════════════════════════
 st.title("🏋️ Crear Rutinas")
 
-tab_crear, tab_gestionar = st.tabs(["✏️ Crear / Editar", "📋 Mis Rutinas"])
+tab_crear, tab_gestionar, tab_custom = st.tabs(["✏️ Crear / Editar", "📋 Mis Rutinas", "🛠️ Mis Ejercicios"])
 
 # ══════════════════════════════════════════════════════════════════
 # TAB 1 — CREADOR EN VIVO
@@ -367,21 +409,28 @@ with tab_crear:
         st.session_state.guardado_ts       = 0
         st.rerun()
 
-    if not nombre_input.strip():
-        st.info("👆 Escribe un nombre para la rutina para empezar.")
-        st.stop()
-
     st.divider()
 
     # ── Toggle modo Visual / Rápido ───────────────────────────
-    modo = st.radio(
-        "modo",
-        ["🖼️ Visual", "⚡ Entrada rápida"],
-        horizontal=True,
-        label_visibility="collapsed",
-        key="modo_radio",
-    )
-    st.session_state.modo_input = modo
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # Botón de Biblioteca
+        # Usamos type="primary" para resaltar el seleccionado basándonos en el session_state
+        if st.button("Biblioteca", use_container_width=True, 
+                    type="primary" if st.session_state.modo_input == "Biblioteca" else "secondary"):
+            st.session_state.modo_input = "Biblioteca"
+            st.rerun()
+
+    with col2:
+        # Botón de Personalizados
+        if st.button("Personalizados", use_container_width=True, 
+                    type="primary" if st.session_state.modo_input == "Personalizados" else "secondary"):
+            st.session_state.modo_input = "Personalizados"
+            st.rerun()
+
+    # Asignamos la variable modo para que el resto de tu código funcione igual
+    modo = st.session_state.modo_input
 
     st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
@@ -390,14 +439,14 @@ with tab_crear:
     # ══════════════════════════════════════════════════════════
     # MODO VISUAL — igual que antes, series compactas
     # ══════════════════════════════════════════════════════════
-    if modo == "🖼️ Visual":
+    if modo == "Biblioteca":
         with col_izq:
             # Fuente
             fuente = st.radio(
                 "Fuente",
-                ["Biblioteca completa", "⭐ Frecuentes"],
+                ["Todos", "Frecuentes"],
                 horizontal=True,
-                index=0 if st.session_state.filtro_fuente == "Biblioteca completa" else 1,
+                index=0 if st.session_state.filtro_fuente == "Todos" else 1,
                 label_visibility="collapsed",
             )
             st.session_state.filtro_fuente = fuente
@@ -415,7 +464,7 @@ with tab_crear:
             ) if grupo_es != "Todos" else None
 
             # Lista según fuente + filtro
-            if fuente == "⭐ Frecuentes":
+            if fuente == "Frecuentes":
                 base = obtener_ejercicios_frecuentes()
                 ejs  = sorted([e for e in base
                                if grupo_en is None or
@@ -466,7 +515,7 @@ with tab_crear:
     # ══════════════════════════════════════════════════════════
     else:
         with col_izq:
-            # ── Text input libre (permite cualquier texto) ────
+            # ── Text input libre ──────────────────────────────
             texto_rapido = st.text_input(
                 "quick_input",
                 value=st.session_state.get("quick_texto", ""),
@@ -476,13 +525,12 @@ with tab_crear:
             )
             st.session_state.quick_texto = texto_rapido
 
-            # ── Sugerencias dinámicas ─────────────────────────
-            custom_ejs   = obtener_ejercicios_custom()
-            sugerencias  = buscar_sugerencias(texto_rapido) if texto_rapido.strip() else []
-            ej_confirmado = st.session_state.get("quick_ej_confirmado", None)
+            custom_ejs    = obtener_ejercicios_custom()
+            sugerencias   = buscar_sugerencias(texto_rapido) if texto_rapido.strip() else []
+            texto_limpio  = texto_rapido.strip()
 
+            # ── Sugerencias ───────────────────────────────────
             if sugerencias:
-                # Mostrar hasta 6 sugerencias como botones compactos
                 st.caption("Sugerencias:")
                 for sug in sugerencias:
                     col_sug, col_add_sug = st.columns([4, 1])
@@ -492,51 +540,82 @@ with tab_crear:
                         st.session_state.quick_texto = sug
                         st.rerun()
 
-            # Si el texto no coincide con nada → opción de crear nuevo
-            texto_limpio = texto_rapido.strip()
-            es_nuevo = (texto_limpio and
-                        texto_limpio not in biblioteca_completa and
-                        texto_limpio not in custom_ejs and
-                        not sugerencias)
+            # Determinar si es ejercicio nuevo (no existe en ningún lado)
+            es_nuevo = (
+                texto_limpio and
+                texto_limpio not in biblioteca_completa and
+                texto_limpio not in custom_ejs and
+                not sugerencias
+            )
 
-            # Ejercicio a usar: confirmado por sugerencia, o el texto libre
+            # Detectar duplicado en custom
+            es_duplicado = texto_limpio and texto_limpio in custom_ejs
+
             ej_a_usar = st.session_state.get("quick_ej_confirmado") or texto_limpio
-
-            # Limpiar confirmado si el usuario borró el texto
             if not texto_limpio:
                 st.session_state.quick_ej_confirmado = None
                 ej_a_usar = None
 
             if ej_a_usar:
-                inf_r     = info_ejercicio(ej_a_usar)
-                url_r     = inf_r.get("url") or IMG_PLACEHOLDER
+                inf_r      = info_ejercicio(ej_a_usar)
                 musculos_r = ", ".join([m_es(m) for m in inf_r.get("primaryMuscles", [])])
+                es_custom_ej = ej_a_usar not in biblioteca_completa
 
-                # Preview compacto
-                cp1, cp2 = st.columns([1, 3])
-                cp1.image(url_r, use_container_width=True)
-                cp2.markdown(f"**{ej_a_usar}**")
+                # Preview
+                if inf_r.get("url"):
+                    st.image(inf_r["url"], width=100)
+                st.markdown(f"**{ej_a_usar}**")
                 if musculos_r:
-                    cp2.caption(f"💪 {musculos_r}")
-                elif es_nuevo or ej_a_usar not in biblioteca_completa:
-                    cp2.caption("🆕 Ejercicio personalizado")
+                    st.caption(f"💪 {musculos_r}")
+                elif es_custom_ej:
+                    st.caption("🆕 Ejercicio personalizado")
 
-                # Series compacto
+                # ── Selector de músculos para ejercicios nuevos ──
+                musculos_custom_sel = []
+                if es_nuevo:
+                    st.caption("¿Qué músculo trabaja?")
+                    opciones_m = [m_es(g) for g in grupos_musculares]
+                    musculos_custom_sel = st.multiselect(
+                        "Músculos",
+                        options=opciones_m,
+                        placeholder="Selecciona uno o más grupos musculares",
+                        label_visibility="collapsed",
+                        key="quick_musculos_sel",
+                    )
+
+                # Aviso de duplicado
+                if es_duplicado:
+                    st.warning(f"⚠️ **{ej_a_usar}** ya existe en tus ejercicios personalizados.")
+
+                # Series
                 st.caption("Series:")
                 widget_series("rapido")
 
-                # Botón agregar
-                btn_lbl = "➕ Crear y agregar" if (es_nuevo or ej_a_usar not in biblioteca_completa) else "➕ Agregar"
+                btn_lbl = "➕ Crear y agregar" if es_nuevo else "➕ Agregar"
+                btn_disabled = es_duplicado and es_custom_ej
+
                 if st.button(btn_lbl, use_container_width=True,
-                             type="primary", key="btn_agregar_rapido"):
+                             type="primary", key="btn_agregar_rapido",
+                             disabled=btn_disabled):
                     n = st.session_state.series_para_agregar
+
+                    # Guardar custom con músculos ANTES de agregar al WIP
+                    if es_nuevo:
+                        # Convertir nombres ES → EN para guardar
+                        TRAD_INV = {v: k for k, v in TRAD.items()}
+                        musculos_en = ",".join([TRAD_INV.get(m, m) for m in musculos_custom_sel])
+                        creado = guardar_ejercicio_custom(ej_a_usar, musculos_en)
+                        if not creado:
+                            st.toast(f"⚠️ {ej_a_usar} ya existe")
+                        else:
+                            st.toast("🆕 Ejercicio personalizado guardado")
+
                     if agregar_ejercicio_wip(ej_a_usar, n):
                         st.toast(f"✅ {ej_a_usar} — {n} series")
-                        if ej_a_usar not in biblioteca_completa:
-                            st.toast("🆕 Guardado como ejercicio personalizado")
-                    # Limpiar campo tras agregar
+
                     st.session_state.quick_texto         = ""
                     st.session_state.quick_ej_confirmado = None
+                    st.session_state.pop("quick_musculos_sel", None)
                     st.rerun()
 
             else:
@@ -613,3 +692,44 @@ with tab_gestionar:
                     if cc2.button("No", key=f"can_r_{nombre_r}"):
                         st.session_state[confirm_key] = False
                         st.rerun()
+
+# ══════════════════════════════════════════════════════════════════
+# TAB 3 — EJERCICIOS PERSONALIZADOS
+# ══════════════════════════════════════════════════════════════════
+with tab_custom:
+    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+
+    rows_custom = c.execute(
+        "SELECT id, nombre, musculos, fecha_creacion FROM ejercicios_custom ORDER BY nombre"
+    ).fetchall()
+
+    if not rows_custom:
+        st.markdown(
+            "<div style='color:#555;font-size:13px;padding:24px;"
+            "border:1px dashed #333;border-radius:10px;text-align:center'>"
+            "No tienes ejercicios personalizados todavía.<br>"
+            "<small>Créalos desde Personalizados</small></div>",
+            unsafe_allow_html=True,
+        )
+    else:
+        st.caption(f"{len(rows_custom)} ejercicio{'s' if len(rows_custom)>1 else ''} personalizado{'s' if len(rows_custom)>1 else ''}")
+
+        for eid, enombre, emusculos, efecha in rows_custom:
+            musculos_es = ""
+            if emusculos:
+                musculos_es = ", ".join([m_es(m.strip()) for m in emusculos.split(",") if m.strip()])
+
+            with st.container(border=True):
+                col_info_c, col_del_c = st.columns([4, 1])
+                with col_info_c:
+                    st.markdown(f"**{enombre}**")
+                    if musculos_es:
+                        st.caption(f"💪 {musculos_es}")
+                    else:
+                        st.caption("Sin grupo muscular asignado")
+                if col_del_c.button("🗑️", key=f"del_custom_{eid}",
+                                    help=f"Eliminar {enombre}",
+                                    use_container_width=True):
+                    eliminar_ejercicio_custom(enombre)
+                    st.toast(f"🗑️ '{enombre}' eliminado")
+                    st.rerun()

@@ -171,7 +171,7 @@ perfil = c.execute(
 ).fetchone()
 
 nombre_actual = perfil[0] if perfil else "Christopher"
-edad_actual   = perfil[1] if perfil else 25
+edad_actual   = perfil[1] if perfil else 24
 
 # ─── PESO MÁS RECIENTE ───────────────────────────────────────────
 ultimo_peso_row = c.execute(
@@ -192,7 +192,7 @@ st.markdown(f"""
 
 <h1 style="margin:6px 0 0; font-size:30px; font-weight:700;
                color:#fff; letter-spacing:-0.02em;">
-        {nombre_actual} {edad_actual} años
+        {nombre_actual} <span style="color:#e63946;">{edad_actual} años
 </h1>
 
 <p style="margin:8px 0 0; font-size:13px; color:#666;">

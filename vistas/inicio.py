@@ -50,7 +50,7 @@ div[data-testid="stButton"] > button[kind="primary"] {
 }
 div[data-testid="stButton"] > button[kind="secondary"] {
     background: #1e1e1e !important;
-    border: 1px solid #2a2a2a !important;
+    border: 0.10px solid #e63946 !important;
     border-radius: 12px !important;
     font-family: 'DM Sans', sans-serif !important;
     color: #aaa !important;
@@ -58,12 +58,12 @@ div[data-testid="stButton"] > button[kind="secondary"] {
 /* Métricas */
 div[data-testid="stMetric"] {
     background: #1a1a1a !important;
-    border: 1px solid #242424 !important;
-    border-radius: 18px !important;
-    padding: 18px !important;
+    border: 0.25px solid #2a2a2a !important;
+    border-radius: 12px !important;
+    padding: 8px !important;
 }
 div[data-testid="stMetricValue"] > div {
-    font-size: 28px !important;
+    font-size: 24px !important;
     font-weight: 700 !important;
     color: #fff !important;
 }
@@ -142,7 +142,7 @@ st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
 if st.button("▶  Entrenar ahora", use_container_width=True, type="primary"):
     st.switch_page("vistas/mis_rutinas.py")
 
-st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
+st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
 
 # ── 4 métricas ────────────────────────────────────────────────────
 vol_display = f"{vol_semana/1000:.1f}k" if vol_semana > 999 else f"{vol_semana:.0f}"
