@@ -283,44 +283,6 @@ if not st.session_state.ejecutando:
 
     st.title("💪 Entrenar")
 
-    # ── Panel de fatiga / recuperación ──────────────────────────
-    # Cache de 5 minutos para no recalcular en cada rerun
-    now_ts = time.time()
-    if st.session_state.fatiga_cache is None or (now_ts - st.session_state.fatiga_ts) > 300:
-        st.session_state.fatiga_cache = calcular_fatiga()
-        st.session_state.fatiga_ts    = now_ts
-
-    fatiga = st.session_state.fatiga_cache
-
-    if fatiga:
-        with st.expander("🔥 Estado de recuperación muscular", expanded=True):
-            # Recomendación del día
-            recomendados = musculos_recomendados(fatiga)
-            altos  = [m for m, d in fatiga.items() if d["nivel"] == "alto"]
-            medios = [m for m, d in fatiga.items() if d["nivel"] == "moderado"]
-
-            if altos:
-                st.warning(f"⚠️ Alta fatiga en: **{', '.join(altos[:3])}** — considera descansar o reducir volumen.")
-            if recomendados:
-                st.success(f"✅ Hoy podrías entrenar: **{', '.join(recomendados)}**")
-
-            # Grid de músculos
-            musculos_ordenados = sorted(fatiga.items(), key=lambda x: -x[1]["score"])
-            cols = st.columns(3)
-            for i, (musculo, data) in enumerate(musculos_ordenados[:9]):
-                badge_class = {
-                    "alto": "fatigue-high",
-                    "moderado": "fatigue-mid",
-                    "bajo": "fatigue-low"
-                }[data["nivel"]]
-                nivel_txt = {"alto": "Alta", "moderado": "Media", "bajo": "Baja"}[data["nivel"]]
-                dias_txt  = "hoy" if data["dias"] == 0 else (f"hace {data['dias']}d" if data["dias"] < 7 else "hace 7d+")
-                cols[i % 3].markdown(
-                    f"**{musculo}**  \n"
-                    f"<span class='{badge_class}'>{nivel_txt}</span> &nbsp; "
-                    f"<small style='color:#666'>{dias_txt}</small>",
-                    unsafe_allow_html=True
-                )
 
     st.divider()
     st.subheader("Selecciona la rutina de hoy")
