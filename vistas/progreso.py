@@ -9,7 +9,19 @@ from vistas.components.bottom_nav import inject_bottom_nav
 # ── CONFIGURACIÓN Y DATOS ──────────────────────────────────────────
 conn = sqlite3.connect("gym_data.db", check_same_thread=False)
 c    = conn.cursor()
-
+# Inyectar script para bloquear el zoom en Safari/iOS
+components.html(
+    """
+    <script>
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+        parent.document.getElementsByTagName('head')[0].appendChild(meta);
+    </script>
+    """,
+    height=0,
+    width=0,
+)
 # Inyectamos la navegación inferior con el estado activo en estadísticas
 inject_bottom_nav(active="stats")
 
@@ -18,6 +30,12 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
+input {
+    font-size: 16px !important;
+}
+            
+/* ESTO SE AGREGO PARA QUE NO ME HAGA ZOOM EL NAVEGADOR EN IOS */
+            
 .stApp {
     background:#0f0f0f !important;
     font-family:'DM Sans',sans-serif !important;
